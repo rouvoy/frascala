@@ -23,6 +23,11 @@
  *
  * Contributor(s):
  */
+
+/**
+ * This package isolates the syntax associated to the SCA-compliant component
+ * model.
+ */
 package frascala.sca {
     import frascala.cbse._
 

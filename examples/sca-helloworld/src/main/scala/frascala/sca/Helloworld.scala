@@ -24,10 +24,13 @@
  * Contributor(s):
  */
 package frascala.sca {
-  import frascala.frascati._
+  import frascala.frascati.intent
   import org.osoa.sca.annotations.{Property,Reference,Scope}
   import org.ow2.frascati.tinfi.api.{IntentHandler,IntentJoinPoint}
 
+  /**
+   * Source code of the primitive components
+   */
   trait Service {
     def print(msg: String)
   }
@@ -50,7 +53,10 @@ package frascala.sca {
     }
   }
 
-  object HelloworldArch extends Composite("Helloworld") {
+  /**
+   * Description of the software architecture
+   */
+  class HelloworldArch extends Composite("Helloworld") {
     val cnt = property[Int]("counter") is 3
 
     val srv = new component("Server") {
@@ -68,6 +74,9 @@ package frascala.sca {
   }
   
   
+  /** 
+   * Definition of an intent (a simple logger)
+   */
   class Logger extends IntentHandler {
     def invoke(ijp: IntentJoinPoint) = {
       println(">> BEFORE invoking method " + ijp.getMethod.getName + "() on component " + ijp.getComponent)
@@ -80,7 +89,7 @@ package frascala.sca {
   object LoggedHelloworldArch extends HelloworldArch {
     val log = intent("Logger", Bean[Logger])
     
-    components("Server").services("s") weaves log
+    srv.s weaves log
     components("Client") weaves log
     weaves(log)
   }  
@@ -88,7 +97,8 @@ package frascala.sca {
 
   object Helloworld extends App {
     println("Describing Helloworld...")
-    println(HelloworldArch.toDocument)
+    val arch = new HelloworldArch()
+    println(arch.toDocument)
 
     println("Describing Helloworld with Logging...")
     println(LoggedHelloworldArch.toDocument)

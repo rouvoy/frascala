@@ -25,7 +25,7 @@
   <dependencies>
   	<dependency>
   		<groupId>frascala</groupId>
-  		<artifactId>frascala-sca</artifactId>
+  		<artifactId>frascala-frascati</artifactId>
   		<version>${project.version}</version>
   	</dependency>
     <dependency>

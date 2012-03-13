@@ -1,5 +1,5 @@
 /**
- * FraSCAla Architecture Framwework
+ * FraSCAla Architecture Framework
  * Copyright (C) 2012 University Lille 1, Inria
  *
  * This library is free software; you can redistribute it and/or
@@ -23,46 +23,16 @@
  *
  * Contributor(s):
  */
+
+/**
+ * This package isolates the definition of an abstract component model defining
+ * the controllers for handling annotations, properties, ports, connectors, and
+ * components.
+ * @author Romain Rouvoy
+ */
 package frascala.cbse {
-  import scala.collection.JavaConversions
-  import scala.collection.JavaConversions.asScalaBuffer
-  import scala.collection.JavaConversions.mapAsJavaMap
-  import scala.collection.Iterable
   import scala.reflect.BeanProperty
-  import org.apache.commons.jxpath.JXPathContext
-  import scala.collection.generic.Growable
-  import scala.collection.mutable.ListBuffer
-  import scala.collection.mutable.HashSet
-  import scala.collection.mutable.SetLike
-
-  class Multiple[A, T <: Iterable[A] with Growable[A]](var iterable: T) extends Iterable[A] with Growable[A] {
-    def iterator = iterable.iterator
-    
-    def +=(elt: A) = { iterable += elt; this }
-    def clear { iterable.clear }
-
-    def reduce[B](z: B)(op: (B, A) => B) = iterable.foldLeft(z)(op)
-    def apply(cond: A => Boolean) = iterable filter cond
-    def asJavaCollection = JavaConversions.asJavaCollection(iterable)
-  }
-
-  trait NameController {
-    @BeanProperty var name: String = _
-    def asTuple = name -> this
-  }
   
-  class NamedMultiple[A <: NameController, T <: HashSet[A]](iterable: T) extends Multiple[A, T](iterable) {
-    def apply(name: String) = iterable.find({ _.name equals name }).get
-    def asJavaMap = mapAsJavaMap(iterable.map({ _.asTuple }).toMap)
-  }
-
-  object Multiple {
-    def list[T] = new Multiple[T, ListBuffer[T]](ListBuffer[T]())
-    def set[T] = new Multiple[T, HashSet[T]](HashSet[T]())
-    def namedSet[T<: NameController] = new NamedMultiple[T, HashSet[T]](HashSet[T]())
-  }
-
-
   trait AnnotationController {
     type ANNOTATION <: Annotation
 
@@ -113,31 +83,5 @@ package frascala.cbse {
     var components = Multiple.namedSet[CONTENT]
     def getComponents = components.asJavaCollection
     def getComponent = components.asJavaMap
-  }
-
-  trait ValueController[T] {
-    @BeanProperty protected var value: T = _
-
-    private var getter: T => T = identity[T]
-    def onGet(newGetter: T => T) = { getter = newGetter; this }
-    def apply() = getter
-
-    private var setter: T => T = identity[T]
-    def onSet(newSetter: T => T) = { setter = newSetter; this }
-    def update(newValue: T) = { value = setter(newValue) }
-  }
-
-  trait PathController {
-    import org.apache.commons.jxpath.JXPathContext
-    lazy val context = JXPathContext.newContext(this)
-
-    def /(path: String) = {
-      val nodes = asScalaBuffer(context.selectNodes(path)).toSet
-      nodes.size match {
-        case 0 => None
-        case 1 => Some(nodes head)
-        case x => Some(nodes)
-      }
-    }
   }
 }
