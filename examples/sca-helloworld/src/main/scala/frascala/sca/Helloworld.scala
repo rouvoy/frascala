@@ -25,8 +25,8 @@
  */
 package frascala.sca {
   import frascala.frascati.intent
-  import org.osoa.sca.annotations.{Property,Reference,Scope}
-  import org.ow2.frascati.tinfi.api.{IntentHandler,IntentJoinPoint}
+  import org.osoa.sca.annotations.{ Property, Reference, Scope }
+  import org.ow2.frascati.tinfi.api.{ IntentHandler, IntentJoinPoint }
 
   /**
    * Source code of the primitive components
@@ -62,7 +62,7 @@ package frascala.sca {
     val srv = new component("Server") {
       property[Int]("count") from cnt
       val s = service("s") exposes Java[Service]
-    } uses Bean[Server] 
+    } uses Bean[Server]
 
     new component("Client") {
       property[String]("header") is ">> "
@@ -72,9 +72,8 @@ package frascala.sca {
 
     service("run") promotes components("Client").services("r")
   }
-  
-  
-  /** 
+
+  /**
    * Definition of an intent (a simple logger)
    */
   class Logger extends IntentHandler {
@@ -85,22 +84,33 @@ package frascala.sca {
       res
     }
   }
-  
+
   object LoggedHelloworldArch extends HelloworldArch {
     val log = intent("Logger", Bean[Logger])
-    
+
     srv.s weaves log
     components("Client") weaves log
     weaves(log)
-  }  
-
+  }
 
   object Helloworld extends App {
     println("Describing Helloworld...")
     val arch = new HelloworldArch()
     println(arch.toDocument)
 
-    println("Describing Helloworld with Logging...")
+    println("\nDescribing Helloworld with Logging...")
     println(LoggedHelloworldArch.toDocument)
+
+    // Testing the JXPath query API
+    val comps = arch / "components"
+
+    println("\nExtracting all the primitive components...")
+    comps foreach { s: XML => println(s.toXML) }
+
+    println("\nExtracting all the properties...")
+    (arch / "components/properties") foreach { s: XML => println(s.toXML) }
+
+    println("\nExtracting all the ports...")
+    (comps / "ports") foreach { s: XML => println(s) }
   }
 }

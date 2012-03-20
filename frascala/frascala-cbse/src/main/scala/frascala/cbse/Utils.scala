@@ -34,7 +34,7 @@ package frascala.cbse {
   import scala.reflect.BeanProperty
   import scala.collection.mutable.HashSet
   import scala.collection.mutable.ListBuffer
-  
+
   class Multiple[A, T <: Iterable[A] with Growable[A]](var iterable: T) extends Iterable[A] with Growable[A] {
     def iterator = iterable.iterator
 
@@ -62,6 +62,32 @@ package frascala.cbse {
     def namedSet[T <: NameController] = new NamedMultiple[T, HashSet[T]](HashSet[T]())
   }
 
+  trait PathController {
+    import org.apache.commons.jxpath.JXPathContext
+    lazy val context = JXPathContext.newContext(this)
+
+    def /[T](path: String) = {
+      var set = new HashSet[T]() with Concepts[T]
+      for (n <- JavaConversions.asScalaBuffer(context.selectNodes(path)))
+        set += n.asInstanceOf[T]
+      set
+    }
+  }
+
+  trait Concepts[T] extends scala.collection.mutable.Set[T] {
+    import org.apache.commons.jxpath.JXPathContext
+
+    def /[T](path: String) = {
+      var set = new HashSet[T]() with Concepts[T]
+      this foreach { e =>
+        val context = JXPathContext.newContext(e)
+        for (n <- JavaConversions.asScalaBuffer(context.selectNodes(path)))
+          set += n.asInstanceOf[T]
+      }
+      set
+    }
+  }
+
   trait ValueController[T] {
     @BeanProperty protected var value: T = _
 
@@ -72,19 +98,5 @@ package frascala.cbse {
     private var setter: T => T = identity[T]
     def onSet(newSetter: T => T) = { setter = newSetter; this }
     def update(newValue: T) = { value = setter(newValue) }
-  }
-
-  trait PathController {
-    import org.apache.commons.jxpath.JXPathContext
-    lazy val context = JXPathContext.newContext(this)
-
-    def /(path: String) = {
-      val nodes = JavaConversions.asScalaBuffer(context.selectNodes(path)).toSet
-      nodes.size match {
-        case 0 => None
-        case 1 => Some(nodes head)
-        case x => Some(nodes)
-      }
-    }
   }
 }
