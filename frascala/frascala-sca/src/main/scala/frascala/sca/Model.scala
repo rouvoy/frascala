@@ -115,7 +115,7 @@ package frascala.sca {
 
     var propertyType: Manifest[T]
 
-    def xsdType = propertyType.toString() match {
+    def xsdType = propertyType.toString match {
       case "java.lang.String" => "xsd:string"
       case "java.lang.Integer" => "xsd:integer"
       case "java.lang.Long" => "xsd:long"
@@ -188,7 +188,6 @@ package frascala.sca {
       <property name={ name } source={ source map { "$" + _.name } orNull } type={ xsdType } xmlns:xsd="http://www.w3.org/2001/XMLSchema">{ value.toString }</property>
     else
       <property name={ name } source={ source map { "$" + _.name } orNull }/>
-
   }
 
   trait ScaPrimitiveMembrane extends ScaComponentMembrane with ScaImplementationController {
@@ -201,7 +200,14 @@ package frascala.sca {
                   { ports map { _.toXML } }
                   { properties map { _.toXML } }
                 </component>
+  }
 
+  trait ScaComponentTypeMembrane extends ScaPrimitiveMembrane {
+    override def toXML = <componentType requires={ require }>
+                           { implementation map { _.toXML } orNull }
+                           { ports map { _.toXML } }
+                           { properties map { _.toXML } }
+                         </componentType>
   }
 
   ////////////////////////////////////////////////////////////////////////////
