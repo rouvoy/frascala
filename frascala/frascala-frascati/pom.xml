@@ -18,11 +18,11 @@
   		<artifactId>frascala-sca</artifactId>
   		<version>${project.version}</version>
   	</dependency>
-  	<dependency>
-  		<groupId>org.ow2.frascati.tinfi</groupId>
-  		<artifactId>frascati-tinfi-runtime-api</artifactId>
-  		<version>1.4.4</version>
-  	</dependency>
+    <dependency>
+		<groupId>org.ow2.frascati</groupId>
+		<artifactId>frascati-runtime-factory</artifactId>
+		<version>1.4</version>
+	</dependency>
   </dependencies>
 
 </project>

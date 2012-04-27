@@ -34,7 +34,7 @@ package frascala.frascati {
 	import org.ow2.frascati.tinfi.api.InterfaceMethodFilter
 	import org.objectweb.fractal.api.control.BindingController
 	import org.objectweb.fractal.api.Interface
-	import adam.frascala.sca.Composite
+	import frascala.sca.Composite
 	import java.io.File
 	
 	class ScaComponentController(val fcComponent: Component) {
