@@ -252,7 +252,11 @@ package frascala.sca {
     type REFERENCE <: ScaCompositeReference
     type PROPERTY <: ScaCompositeProperty[_]
 
-    def toXML = <implementation.composite descriptor={ filename }/>
+    def toXML = <component name={ name } requires={ require }>
+                  <implementation.composite descriptor={ filename }/>
+                  { ports map { _.toXML } }
+                  { properties map { _.toXML } }
+                </component>
 
     val extension = ".composite"
 

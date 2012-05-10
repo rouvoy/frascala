@@ -160,6 +160,11 @@ package frascala.sca {
             name = id
         }
         
+        def composite[T<: scaComponent](c: T) = {
+          components += c
+          c
+        }
+        
         case class wire(source: ScaReference, target: ScaService) extends ScaWire {
             type OWNER = scaComposite
             type FROM = ScaReference
